@@ -193,28 +193,85 @@ const book = lufthansa.book;
 //how to fix?
 //tell JS manually what the this. keyword should do
 //CALL, APPLY, AND BIND
-book.call(eurowings, 23, 'Sarah Lalee')
+book.call(eurowings, 23, 'Sarah Lalee');
 //the first arg above, tells the THIS keyword where to point
 //the following 2 arguments are flightNum and name, respectively
-console.log(eurowings)
+console.log(eurowings);
 
-book.call(lufthansa, 239, 'Patrizz')
-console.log(lufthansa)
+book.call(lufthansa, 239, 'Patrizz');
+console.log(lufthansa);
 
 //the order of the property names dont have to be the same, but they
 //should be
 const swiss = {
-    airline: 'Swiss Air',
-    iataCode: 'SA',
-    bookings: []
-}
+  airline: 'Swiss Air',
+  iataCode: 'SA',
+  bookings: [],
+};
 
-book.call(swiss, 116, 'Oblock Ocho')
+book.call(swiss, 116, 'Oblock Ocho');
 
 //APPLY METHOD
 //does basically the same thing as call()
 //differece: doesnt take argument list after the first, rather, takes
 //an array of the arguments
-const flightData = [583, 'George Cooper']
-book.apply(swiss, flightData)
-console.log(swiss)
+const flightData = [583, 'George Cooper'];
+book.apply(swiss, flightData);
+console.log(swiss);
+//the above apply() is the same thing as spreading within call()
+book.call(swiss, ...flightData);
+
+// --- BIND METHOD ---
+// using call:
+// book.call(eurowings, 23, 'Oblock Ocho')
+//THIS keyword is bound, doesnt need to be re-passed in as with call
+const bookEW = book.bind(eurowings); // will not call the book function
+bookEW(23, 'Steven Williams'); // same as the call above
+
+const bookLH = book.bind(lufthansa);
+const bookLX = book.bind(swiss);
+
+const bookEW23 = book.bind(eurowings, 23); //flightNum is preset
+bookEW23('Daryl Sullivan');
+bookEW23('illenium');
+
+// with EVENT LISTENERS
+lufthansa.planes = 300;
+lufthansa.buyPlane = function () {
+  console.log(this); // without using bind, this is set to the html btn
+  this.planes++;
+  console.log(this.planes); // therefore, this rtns NaN
+};
+//this will increase plane total by 1, bc THIS === lufthansa object
+lufthansa.buyPlane();
+
+document
+  .querySelector('.buy')
+  //without using BIND, THIS will point to the button instead of the obj
+  .addEventListener('click', lufthansa.buyPlane.bind(lufthansa));
+
+// partial application
+const addTax = (rate, value) => value + value * rate;
+console.log(addTax(0.1, 200));
+
+//in this case, there is no THIS keyword in the function...
+// so we pass NULL first
+// then we can pass the (rate) into addTax
+const addVAT = addTax.bind(null, 0.23);
+// addVAT = value => value + value * 0.23
+// this is how the above function looks
+
+console.log(addVAT(100));
+console.log(addVAT(364));
+
+//challenge, rewrite the example, except create a function that returns another function
+const inclTAX = (rate) => {
+  return (value) => {
+    return value + value * rate;
+  };
+};
+console.log(inclTAX(0.23)(500))
+const addVAT2 = inclTAX(0.23)
+console.log(addVAT2(500))
+console.log(addVAT2(250))
+
